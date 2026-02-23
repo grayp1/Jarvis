@@ -2,49 +2,60 @@
     Name: jarvis.py
     Author: Paul Gray
     Created: 02/22/26
-    Purpose: Learning to run speech recognition 
+    Purpose: A program to run speech recognition
 """
 
-import speech_recognition as sr  # Assuming you have this
-# ... other imports, including from wikipedia_oop ...
 
-# Your existing TTS function, e.g., def speak(text): ...
+import speech_recognition as sr
+import pyttsx3
+from wikipedia_oop import WikipediaApp
 
-def get_command():  # Your speech recognition function
+wikipedia_app = WikipediaApp()
+engine = pyttsx3.init()
+
+def speak(text):
+    print(f"JARVIS: {text}")
+    engine.say(text)
+    engine.runAndWait()
+
+def get_command():
     recognizer = sr.Recognizer()
-    with sr.Microphone(device_index=YOUR_INDEX) as source:  # Use index from troubleshooting
+    with sr.Microphone() as source: 
         print("Listening . . .")
+        recognizer.pause_threshold = 1
         audio = recognizer.listen(source)
         try:
             print("Recognizing . . .")
             command = recognizer.recognize_google(audio).lower()
             return command
         except:
-            return None  # Or handle error
+            return None
 
-# In main loop:
 while True:
     print("+---------------------+")
     print("| JARVIS Main Menu    |")
     print("+---------------------+")
     print("Commands: Wikipedia, exit")
+    
     command = get_command()
+    
     if command:
         if "wikipedia" in command:
             print("+---------------------+")
             print("| Search Wikipedia    |")
             print("+---------------------+")
-            speak("What would you like to search for on Wikipedia?")  # If TTS
+            speak("What would you like to search for on Wikipedia?")
+            
             search_term = get_command()
             if search_term:
                 answer = wikipedia_app.get_wikipedia(search_term)
                 print(answer)
-                speak(answer)  # If TTS
+                speak(answer)
             else:
-                print("Google Speech Recognition could not understand what you said.")
+                print("Could not understand the search term.")
+        
         elif "exit" in command:
-            print("Goodbye!")
-            print("Have a good day!")
+            speak("Goodbye!")
             break
     else:
-        print("Google Speech Recognition could not understand what you said.")
+        print("Could not understand the command.")
